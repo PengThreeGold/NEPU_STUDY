@@ -267,7 +267,7 @@ tensor([3.5000]) 3.5 3.5 3
 + os.path.join 合并字符串构建一个路径
 + read_csv 读取csv表格
 + fillna 对所有NA的域填一个值
-+ get_dummies使数据以one-hot（独热编码）格式编码，参数dummy_na表示是否对NA进行编码
++ get_dummies 使数据以one-hot（独热编码）格式编码，参数dummy_na表示是否对NA进行编码
 + torch.tensor() 可以将数值类型转换为张量类型
 
 # 模型实战
