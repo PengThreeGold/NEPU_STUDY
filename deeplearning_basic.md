@@ -1,5 +1,277 @@
 # 动手学深度学习（东北石油大学-大数据分析技术）
 
+# 基础知识
+
+## 一、深度学习介绍
+
+### 1、简介
+
++ 人工智能最热领域
++ 核心是神经网络
++ 是一门语言
+
+### 2、经典与最新模型
+
++ 线性神经网络、多层感知机
++ LeNet（卷积神经网络，用于手写数字识别模型）
++ RNN（循环神经网络）、LSTM（长短期记忆人工神经网络）
++ Attention（注意力机制）、Transformer
++ SGD（随机梯度下降算法）
++ 并行计算技术、多GPU计算技术、分布式技术
++ YoloV、OpenCV（计算机视觉-目标检测）
++ BERT（自然语言处理）
+
+### 3、AI热门方向
+
++ 计算机视觉
++ 深度学习
++ 自然语言处理
+
+#### 4、应用实例
+
++ 图片分类
++ 物理检测和分割
++ 样式迁移
++ 人脸识别和合成
++ 文字生成图片
++ 文字生成（语义模型）
++ 无人驾驶（计算机视觉）
+
+#### 5、PyTorch介绍
+
++ 深度学习算法是高度结构化的，不需要从零创建
++ 深度学习框架：通过将深度学习算法和模型抽象成张量的 一系列计算，并把计算涉及的一些算法抽象成应用程序接 口供用户使用，从而可以快速实现各种各样的深度学习算 法。
++ **PyTorch**是一个基于Python的深度学习框架，提供两个 高级功能：
+  + 具有强大的**GPU加速**的张量计算
+  + 包含**自动求导**系统的深度神经网络
+
+## 二、数据操作与预处理
+
+### 1、张量
+
+**N维数组是机器学习和神经网络的主要数据结构。**数组也称为**张量（tensor）**，它具有多个维度。
+
++ 0个维度数学意义为标量
++ 1个维度数学意义为向量
++ 2个维度数学意义为矩阵
++ 2个维度以上无特殊数学意义
+
+深度学习框架中的数组（张量）比Numpy的ndarray多一些重要功能（CPU加速、自动微分），这些功能使得张量类更适合深度学习。
+
+### 2、张量创建与操作
+
+#### （1）创建一个行向量
+
+```python
+x = torch.arange(12)  
+x 
+```
+
+```
+tensor([ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11])
+```
+
++ 这个行向量包含从0开始的前12个整数，默认创建为**浮点数**
++ 张量中的每个值都称为张量的**元素**（element）
++ 除非额外指定，新的张量**默认**将存储在**内存**中，并采用基 于**CPU**的计算
+
+#### （2）查询张量维度
+
+```python
+x.shape
+```
+
+```
+torch.Size([12])
+```
+
+可以通过张量的shape属性来访问张量沿**每个维度的长度**。
+
+#### （3）查询张量元素数量
+
+```python
+x.numel()
+```
+
+```
+12
+```
+
+numel()（即number of elements的缩写）可以查看张 量有多少元素。
+
+#### （4）更改张量形状（维度）
+
+```python
+X = x.reshape(3, 4)
+X
+```
+
+```
+tensor([[ 0, 1, 2, 3], 
+        [ 4, 5, 6, 7], 
+        [ 8, 9, 10, 11]])
+```
+
++ 要想改变一个张量的形状而**不改变元素数量和元素值**，可以调用reshape函数
++ 改变张量的形状，张量的大小（size）不会改变
+
+**自动计算维度并更改**（只能计算剩余一维度的情况）
+
+如果我们的目标形状是（高度,宽度）， 那么在知道宽 度后，高度会被自动计算得出。
+
+我们可以用x.reshape(-1,4)或x.reshape(3,-1)来取代 x.reshape(3,4)
+
+#### （5）生成全0/1矩阵
+
+```python
+torch.zeros((2, 3, 4))
+torch.ones((2, 3, 4))
+```
+
+#### （6）根据特点概率分布生成张量
+
+```python
+torch.randn(3, 4)
+```
+
+生成元素服从均值为0，标准差为1的**正态分布**。
+
+#### （7）指定数据生成张量
+
+```python
+torch.tensor([[2, 1, 4, 3], [1, 2, 3, 4], [4, 3, 2, 1]])
+```
+
+```
+tensor([[2, 1, 4, 3], 
+        [1, 2, 3, 4], 
+        [4, 3, 2, 1]])
+```
+
+还可以通过提供包含数值的**Python列表 （或嵌套列表）**，来为所需张量中的每个元素赋予确定的值。
+
+### 3、张量基本运算
+
++ 按元素（element-wise）运算：按元素运算将二元运算符应用于两个数组中的**每对位置对应的元素**
+
++ 对于任意具有相同形状的张量， 常见的标准算术运算符（+、-、 * 、/、**）都可以被**升级为按元素运算**
+
++ 我们可以在**同一形状的任意**两个张量上调用按元素操作
+
+```python
+x = torch.tensor([1.0, 2, 4, 8])
+y = torch.tensor([2, 2, 2, 2])
+x + y, x - y, x * y, x / y, x ** y # 标准运算符
+torch.exp(x) # 求幂运算
+torch.cat((X, Y), dim=0) # 张量连接-按行（上下）
+torch.cat((X, Y), dim=1) # 张量连接-按列（左右）
+X == Y # 逻辑运算符（每个位置两两比较返回布尔值）
+X.sum() # 对所有元素进行求和（会产生一个单元素向量）
+```
+
+### 4、广播机制
+
+**形状不同两个张量上，我们仍然可以通过调用广播机制来执行按元素操作。**
+
++ 首先，通过适当复制元素来扩展一个或两个数组， 以 便在转换之后，两个张量具有相同的形状
++ 其次，对生成的数组执行按元素操作。
+
+广播机制注意事项：
+
++ 每个张量至少有一个维度
++ 在遍历维度大小时, 从尾部维度开始遍历
++ 并且二者对应维度的值需满足：（相等） 或 （其中一个值是1或不存在）。
+
+```python
+e = torch.arange(3).reshape(3, 1)
+f = torch.arange(2).reshape(1, 2)
+print(e, f, sep="\n")
+# e中的第一列三个元素被复制到第二列，f中第一行两个元素被复制到第二行和第三行
+print(e+f)
+```
+
+```
+tensor([[0],
+        [1],
+        [2]])
+tensor([[0, 1]])
+tensor([[0, 1],
+        [1, 2],
+        [2, 3]])
+```
+
+### 5、索引与切片
+
+![pCM13nO.png](https://s1.ax1x.com/2023/06/16/pCM13nO.png)
+
+### 6、节省内存
+
+```python
+# 运行一些操作可能会导致为新结果分配内存
+d_id_before = id(d)
+d = d +c
+print(id(d) == d_id_before)
+
+```
+
+```
+False
+```
+
+```python
+# 执行原地操作（对元素进行改写，地址不变）
+z = torch.zeros_like(d)  # 根据d的形状创建全0张量
+print("id(z) : ", id(z))
+z[:] = c + d
+print("id(z) : ", id(z))
+```
+
+```
+id(z) :  1833344835392
+id(z) :  1833344835392
+```
+
+```python
+# 如果在后续计算中没有重复使用c
+# 我们也可以使用c[:] = c + d 或 c += d 来减少操作的内存开销
+c_id_before = id(c)
+c += d
+print(id(c) == c_id_before)
+```
+
+```
+True
+```
+
+### 7、张量类型转换
+
+```python
+# 转换为Numpy张量
+c = torch.arange(12, dtype=torch.float32).reshape((3, 4))
+c_np = c.numpy()
+c_np_2_ts = torch.tensor(c_np)
+# 将大小为1的张量转换为Python的标量
+a = torch.tensor([3.5])
+print(a, a.item(), float(a), int(a))
+```
+
+```
+tensor([3.5000]) 3.5 3.5 3
+```
+
+### 8、数据预处理
+
+常用函数：
+
++ makedirs 创建一个文件夹
++ os.path.join 合并字符串构建一个路径
++ read_csv 读取csv表格
++ fillna 对所有NA的域填一个值
++ get_dummies使数据以one-hot（独热编码）格式编码，参数dummy_na表示是否对NA进行编码
++ torch.tensor() 可以将数值类型转换为张量类型
+
+# 模型实战
+
 ## 一、线性回归模型
 
 ### 1、模型及相关介绍
@@ -69,7 +341,7 @@
 
 #### （5）解析解
 
-当模型和损失函数形式较为简单时，上面的误差最小化问题的解可以直接用公式表达出来。这类解叫作**解析解**（analytical solution） 。 **像线性回归这样的简单****问题存在解析解，但并不是所有的问题都存在解析解。**
+当模型和损失函数形式较为简单时，上面的误差最小化问题的解可以直接用公式表达出来。这类解叫作**解析解**（analytical solution） 。 **像线性回归这样的简单**问题存在解析解，但并不是所有的问题都存在解析解。
 
 + 首先，我们将偏置𝑏合并到参数𝐰中，合并方法是在包含所有参数的矩阵中附加一列。
 + 我们的预测问题是最小化‖𝐲 − 𝐗𝐰‖2。
@@ -748,7 +1020,7 @@ print('b的估计误差：', true_b - b)
 
 #### （4）softmax运算
 
-**softmax运算不会改变未规范化的预测**𝐨**之间的顺序，只会确定分配给每个类别的概率**。**尽管softmax是一个非线性函数，但softmax回归的输出仍然由输入特征的仿射变换决定， 因此，softmax回归是一个线性模型（linear  model）**。
+softmax运算**不会**改变**未规范化**的预测𝐨之间的**顺序**，只会**确定**分配给每个类别的概率。尽管softmax是一个**非线性函数**，但softmax回归的**输出**仍然由输入特征的**仿射变换决定**， 因此，softmax回归是一个**线性模型**（linear  model）。
 
 #### （5）损失函数
 
@@ -1481,4 +1753,372 @@ predict_ch3(net, test_iter)
 
 ### 2、从零实现
 
+现在让我们尝试自己实现一个多层感知机。 为了与之前softmax回归获得的结果进行比较， 我们将继续使用Fashion-MNIST图像分类数据集。
+
+#### （1）导入数据集
+
+导入相关必要包
+
+```python
+import torch
+from torch import nn # 神经网络模块相关的包
+from d2l import torch as d2l # 后续加载其中的图形绘制函数
+```
+
+导入数据集
+
+```python
+#  导入数据集
+# 设置数据迭代器的批次大小
+batch_size = 256
+# 得到训练集和测试集的迭代器
+train_iter, test_iter = d2l.load_data_fashion_mnist(batch_size)
+```
+
+#### （2）初始化模型参数
+
+Fashion-MNIST中的每个图像由 28 × 28 = 784个灰度像素值组成。 所有图像共分为10个类别。 忽略像素之间的空间结构， 我们可以将每个图像视为具有784个输入特征 和10个类的简单分类数据集。 首先，我们将实现一个具有**单隐藏层的多层感知机**， 它包含**256个隐藏单元**。 
+
+注意，我们可以将这两个变量都视为超参数。 通常，我们选择2的若干次幂作为层的宽度。 因为内存在硬件中的分配和寻址方式，这么做往往可以在计算上更高效。
+
+我们用几个**张量**来表示我们的参数。 注意，对于每一层我们都要**记录**一个权重矩阵和一个偏置向量。 跟以前一样，我们要为这些参数的损失的梯度分配内存。
+
+```python
+num_inputs, num_outputs, num_hiddens = 784, 10, 256 # hiddens即为隐藏单元个数
+# randn：以给定的形状创建一个随机数组，数组元素符合标准正态分布 N(0,1) 
+# nn.Parameter：可加可不加
+W1 = nn.Parameter(torch.randn(num_inputs, num_hiddens, requires_grad=True) * 0.01)
+# 偏置的行数等于此层权重的列数 
+b1 = nn.Parameter(torch.zeros(num_hiddens, requires_grad=True))
+# 上一层的列数为下一层的行数
+W2 = nn.Parameter(torch.randn(num_hiddens, num_outputs, requires_grad=True) * 0.01)
+# 偏置的行数等于此层的列数
+b2 = nn.Parameter(torch.zeros(num_outputs, requires_grad=True))
+params = [W1, b1, W2, b2]
+```
+
+对于矩阵参数的分析：
+
++ 权重W = tensor（矩阵行，矩阵列），行数为输入数，列数为输出数，也就是说，上一层的列数，做下一层的行数
++ 偏置的行数，即偏置的个数应该等于输出的个数，即等于此层的输出数 b=（此层列数）
++ num_inputs 和 num_outputs 都是数据决定的，num_hiddens 是隐藏层的个数
++ torch.nn.Parameter 继承 torch.Tensor，其作用将一个不可训练的类型为Tensor的参数转化为可训练的类型为 parameter 的参数，并将这个参数绑定到 module 里面，成为  module 中可训练的参数
++ w1初始为随机的，行数为784，列数为256，需要更新梯度，偏差b1的大小和隐藏层相同为256，设置为0
++ w2的输入为隐藏层和输出，256和10，偏差b2是最终输出的10
++ 其中 [w1,b1,w2,b2] 里面 w1、b1是第一层，w2、b2是第二层
+
+#### （3）激活函数
+
+```python
+# 激活函数
+def relu(X):
+    # a是和X相同形状的零矩阵 不加like会报错说zero的参数必须是一个整数的元组，而不能是张量
+    a = torch.zeros_like(X)
+    # 矩阵X与0作比较，返回大的值，即只会保留正数部分
+    return torch.max(X, a)
+```
+
+#### （4）模型
+
+因为我们忽略了空间结构， 所以我们使用 reshape 将每个二维图像转换为一个长度为 num_inputs 的向量。
+
+```python
+def net(X):
+    # 和隐藏层那里一样，行数作为输入，列数作为输出，这里是整个网络的输入层，输入设为-1，即根据数据集的输入自己定
+    # num_inputs作为输入层的输出，然后进到隐藏层的输入层
+    X = X.reshape((-1, num_inputs))
+    # 矩阵乘法用@符号，当然也可以用matmul（X,W1）来实现
+    H = relu(X@W1 + b1) # 这里“@”代表矩阵乘法
+    return (H@W2 + b2) # 返回第一层的输出和第二层的权重作乘法，再加上偏置
+
+```
+
+#### （5）定义损失函数
+
+由于我们已经从零实现过softmax函数（上一节softmax模型）， 因此在这里我们直接使用高级API中的内置函数来计算softmax和交叉熵损失。
+
+```python
+loss = nn.CrossEntropyLoss() # 用交叉熵做损失函数
+```
+
+#### （6）训练
+
+幸运的是，**多层感知机的训练过程与softmax回归的训练过程完全相同**。 可以直接调用 d2l 包的 train_ch3 函数， 将迭代周期数设置为10，并将学习率设置为0.1。
+
+```python
+# 训练
+# 设置迭代周期数、学习率
+num_epochs, lr = 10, 0.1
+# 在SGD里传入所有的参数，学习率0.1
+updater = torch.optim.SGD(params, lr=lr)
+# 训练数据并进行可视化展示
+d2l.train_ch3(net, train_iter, test_iter, loss, num_epochs, updater)
+```
+
+#### （7）预测
+
+为了对学习到的模型进行评估，我们将在一些测试数据上应用这个模型。
+
+```python
+d2l.predict_ch3(net, test_iter)
+```
+
+#### （8）小结
+
++ 手动实现一个简单的多层感知机是很容易的。然而如果有大量的层，从零开始实现多层感知机会变得很麻烦（例如，要命名和记录模型的参数）。
+
+#### （9）练习
+
++ 在所有其他参数保持不变的情况下，更改超参数 num_hiddens 的值，并查看此超参数的变化对结果有何影响。确定此超参数的最佳值。
++ 尝试添加更多的隐藏层，并查看它对结果有何影响。
++ 改变学习速率会如何影响结果？保持模型架构和其他超参数（包括轮数）不变，学习率设置为多少会带来最好的结果？
++ 通过对所有超参数（学习率、轮数、隐藏层数、每层的隐藏单元数）进行联合优化，可以得到的最佳结果是什么？
++ 描述为什么涉及多个超参数更具挑战性。
++ 如果要构建多个超参数的搜索方法，你能想到的最聪明的策略是什么？
+  + 逐步优化法（Baby Siting），大范围下手动寻找一个较优解，后使用上下迭代的方式对超参数进行逐个改进，半自动求最优解
+  + 构建网格搜索法（Grid Search），将所有超参数规定好范围映射到网格中，使用遍历操作遍历网格每种超参数搭配方案求得最优解
+  + 有限随机参数法（Random Search），定义随机参数的有限范围，使用不重复随机的参数生成获取最优解
+
+#### （10）代码合集
+
+```python
+import torch
+from torch import nn # 神经网络模块相关的包
+from d2l import torch as d2l # 后续加载其中的图形绘制函数
+
+#  1、导入数据集
+
+# 设置数据迭代器的批次大小
+batch_size = 256
+# 得到训练集和测试集的迭代器
+train_iter, test_iter = d2l.load_data_fashion_mnist(batch_size)
+
+# 2、初始化参数
+
+num_inputs, num_outputs, num_hiddens = 784, 10, 256 # hiddens即为隐藏单元个数
+# randn：以给定的形状创建一个随机数组，数组元素符合标准正态分布 N(0,1) 
+# nn.Parameter：可加可不加
+W1 = nn.Parameter(torch.randn(num_inputs, num_hiddens, requires_grad=True) * 0.01)
+# 偏置的行数等于此层权重的列数 
+b1 = nn.Parameter(torch.zeros(num_hiddens, requires_grad=True))
+# 上一层的列数为下一层的行数
+W2 = nn.Parameter(torch.randn(num_hiddens, num_outputs, requires_grad=True) * 0.01)
+# 偏置的行数等于此层的列数
+b2 = nn.Parameter(torch.zeros(num_outputs, requires_grad=True))
+params = [W1, b1, W2, b2]
+
+# 3、激活函数
+
+def relu(X):
+    # a是和X相同形状的零矩阵 不加like会报错说zero的参数必须是一个整数的元组，而不能是张量
+    a = torch.zeros_like(X)
+    # 矩阵X与0作比较，返回大的值，即只会保留正数部分
+    return torch.max(X, a)
+
+# 4、模型
+
+def net(X):
+    # 和隐藏层那里一样，行数作为输入，列数作为输出，这里是整个网络的输入层，输入设为-1，即根据数据集的输入自己定
+    # num_inputs作为输入层的输出，然后进到隐藏层的输入层
+    X = X.reshape((-1, num_inputs))
+    # 矩阵乘法用@符号，当然也可以用matmul（X,W1）来实现
+    H = relu(X@W1 + b1) # 这里“@”代表矩阵乘法
+    return (H@W2 + b2) # 返回第一层的输出和第二层的权重作乘法，再加上偏置
+
+# 5、损失函数
+
+loss = nn.CrossEntropyLoss() # 用交叉熵做损失函数
+
+# 6、训练
+
+# 设置迭代周期数、学习率
+num_epochs, lr = 10, 0.1
+# 在SGD里传入所有的参数，学习率0.1
+updater = torch.optim.SGD(params, lr=lr)
+# 训练数据并进行可视化展示
+d2l.train_ch3(net, train_iter, test_iter, loss, num_epochs, updater)
+
+# 7、预测
+
+d2l.predict_ch3(net, test_iter)
+```
+
+
+
 ### 3、简洁实现
+
+正如你所期待的，我们可以通过**高级API**更简洁地实现多层感知机。
+
+#### （1）导入数据集
+
+导入相关必要包
+
+```python
+import torch
+from torch import nn # 神经网络模块相关的包
+from d2l import torch as d2l # 后续加载其中的图形绘制函数
+```
+
+导入数据集
+
+```python
+#  导入数据集
+# 设置数据迭代器的批次大小
+batch_size = 256
+# 得到训练集和测试集的迭代器
+train_iter, test_iter = d2l.load_data_fashion_mnist(batch_size)
+```
+
+#### （2）初始化模型参数
+
+与softmax回归的简洁实现相比， **唯一的区别**是我们添加了**2个全连接层**（之前我们只添加了1个全连接层）。 
+
++ 第一层是**隐藏层**，它包含256个隐藏单元，并使用了ReLU激活函数。 
++ 第二层是**输出层**。
+
+```python
+'''
+pyTorch不会隐式地调整输入的形状。
+因此我们在定义线性层前定义了展平层（flatten），来调整网络输入的形状。
+注意：定义的nn.Sequential()、nn.Flatten() 的作用就是转为2维；
+      （输入256*28*28 转换为 256*784）
+'''
+
+net = nn.Sequential(nn.Flatten(),
+                    nn.Linear(784, 256), # 全连接层，相当于 Y=WX+b。（入784出256）
+                    nn.ReLU(),           # 激活函数 ReLU
+                    nn.Linear(256, 10))  # 全连接层，相当于Y=WX+b。（入256出10）
+
+# 初始化（每个全连接层的权重 weight）
+def init_weights(m):  # m 是一个 module
+    if type(m) == nn.Linear:               # 如果是全连接层
+        nn.init.normal_(m.weight, std=0.01)  # 从正态分布N~(0,0.01)中随机抽取填充m.weight
+
+net.apply(init_weights)  # apply 对 net 中所有的 Linear 遍历，初始化网络权重
+```
+
+**函数说明**
+
++ nn.Sequential() 是一个有序的容器。神经网络模块将按照传入顺序依次添加到相关计算中  
++ nn.Flatten() 把任意维度的Tensor变为一个2D的Tensor。把第0维度保留，剩下的维度全部展成一个向量。  
++ nn.LInear() 定义一个神经网络的线性全连接层。(输入神经元个数，输出神经元个数，偏置)  
+
+#### （3）定义损失函数
+
+```python
+# 定义损失函数
+loss = nn.CrossEntropyLoss()
+```
+
+**函数说明**
+
+nn.CrossEntropyLoss() 参数说明
++ elementwise_mean：默认情况，表明对N个样本的loss进行求平均值并返回
++ sum：表明对N个样本的loss求和
++ none：表明直接返回N个样本的loss
+
+#### （4）定义优化算法
+
+```python
+# 定义优化算法
+batch_size, lr, num_epochs = 256, 0.1, 10 # 设置批次大小，学习率，迭代次数
+trainer = torch.optim.SGD(net.parameters(), lr=lr) # 在SGD李传入所有的参数，学习率0.1
+```
+
+#### （5）训练
+
+```python
+d2l.train_ch3(net, train_iter, test_iter, loss, num_epochs, trainer) # 训练数据并进行可视化展示
+```
+
+#### （6）预测
+
+```python
+d2l.predict_ch3(net, test_iter) # 验证测试集并进行可视化展示
+```
+
+#### （7）小结
+
++ 我们可以使用高级API更简洁地实现多层感知机。
+
++ 对于相同的分类问题，多层感知机的实现与softmax回归的实现相同，只是多层感知机的实现里增加了带有激活函数的隐藏层。
+
+#### （8）练习
+
++ 尝试添加不同数量的隐藏层（也可以修改学习率），怎么样设置效果最好？
+
+```python
+# 添加隐藏层
+net = nn.Sequential(nn.Flatten(),
+                    nn.Linear(784, 256),  # 全连接层，相当于 Y=WX+b。（入784出256）
+                    nn.ReLU(),            # 激活函数 ReLU
+                    nn.Linear(256, 64),   # 全连接层，相当于 Y=WX+b。（入256出64）
+                    nn.ReLU(),            # 激活函数 ReLU
+                    nn.Linear(64, 10))    # 全连接层，相当于Y=WX+b。（入64出10）
+```
+
++ 尝试不同的激活函数，哪个效果最好？
+
+```python
+# 更换激活函数
+net = nn.Sequential(nn.Flatten(),
+                    nn.Linear(784, 256),  # 全连接层，相当于 Y=WX+b。（入784出256）
+                    nn.Sigmoid(),            # 激活函数 Sigmoid
+                    nn.Linear(256, 10))   # 全连接层，相当于Y=WX+b。（入64出10）
+```
+
++ 尝试不同的方案来初始化权重，什么方法效果最好？
+
+#### （9）代码合集
+
+```python
+import torch
+from torch import nn # 神经网络模块相关的包
+from d2l import torch as d2l # 后续加载其中的图形绘制函数
+
+#  1、导入数据集
+
+# 设置数据迭代器的批次大小
+batch_size = 256
+# 得到训练集和测试集的迭代器
+train_iter, test_iter = d2l.load_data_fashion_mnist(batch_size)
+
+# 2、初始化模型参数
+
+'''
+pyTorch不会隐式地调整输入的形状。
+因此我们在定义线性层前定义了展平层（flatten），来调整网络输入的形状。
+注意：定义的nn.Sequential()、nn.Flatten() 的作用就是转为2维；
+      （输入256*28*28 转换为 256*784）
+'''
+
+net = nn.Sequential(nn.Flatten(),
+                    nn.Linear(784, 256), # 全连接层，相当于 Y=WX+b。（入784出256）
+                    nn.ReLU(),           # 激活函数 ReLU
+                    nn.Linear(256, 10))  # 全连接层，相当于Y=WX+b。（入256出10）
+
+# 初始化（每个全连接层的权重 weight）
+def init_weights(m):  # m 是一个 module
+    if type(m) == nn.Linear:               # 如果是全连接层
+        nn.init.normal_(m.weight, std=0.01)  # 从正态分布N~(0,0.01)中随机抽取填充m.weight
+
+net.apply(init_weights)  # apply 对 net 中所有的 Linear 遍历，初始化网络权重
+
+# 3、定义损失函数
+
+loss = nn.CrossEntropyLoss()
+
+# 4、定义优化算法
+
+batch_size, lr, num_epochs = 256, 0.1, 10 # 设置批次大小，学习率，迭代次数
+trainer = torch.optim.SGD(net.parameters(), lr=lr) # 在SGD李传入所有的参数，学习率0.1
+
+# 5、训练
+
+d2l.train_ch3(net, train_iter, test_iter, loss, num_epochs, trainer) # 训练数据并进行可视化展示
+
+# 6、预测
+
+d2l.predict_ch3(net, test_iter) # 验证测试集并进行可视化展示
+```
+
